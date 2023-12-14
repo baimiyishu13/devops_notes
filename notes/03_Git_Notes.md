@@ -548,15 +548,145 @@ rm '.idea/vcs.xml'
 
 
 
+#### 🚀 报错正在进行的更改（隐藏）
+
+在bug分支中，假设无法修复，需要更多的信息，关于如何修复，需要 切换到其他分支查看。
+
++ 离开分支提示：隐藏这些更改
+
+##### 🎯 git stash
+
+`git stash` 是一个用于保存当前工作目录的临时状态的 Git 命令。当你需要切换分支、处理紧急任务或者在进行其他操作之前，想要保存当前的修改而不提交它们时，`git stash` 是一个非常有用的工具。
+
++ list参数：查看
++ apply
++ clear
++ pop 取回
+
+```sh
+➜  my_devops_projects git:(feature/databases-connection) ✗ git stash 
+Saved working directory and index state WIP on feature/databases-connection: abdfb5f gitignore file
+➜  my_devops_projects git:(feature/databases-connection) git checkout main
+Switched to branch 'main'
+Your branch is up to date with 'origin/main'.
+➜  my_devops_projects git:(main) 
+```
+
+切换回来后，更改不在这里，取回更改
+
+```sh
+ git stash pop 
+```
 
 
 
+#### 🚀 Git 历史
+
+git log 可以查看历史commit 提交记录
+
++ 每个提交都有为一个哈希值
+
+在排查哪个更改代码导致的bug时很有用，复现找出错误的原因或问题。
+
+回退到某次提交时的整个应用程序的代码
+
+```sh
+git checkout 8567fba536f54990a1ed73fef4751a576e62b0b6
+```
+
+大多数情况都是用来
+
++ 测试 
++ 重现错误 
 
 
 
+#### 🚀 删除和修改提交
+
+假如：更改了些内容，并且提交了
+
+```sh
+git commit -m "delete main.go line 8-9"
+```
+
+推送前意识到有错误，所以想还原，恢复整个提交
+
++ 很安全的重置最后一次提交
+
+```sh
+git log
+---
+commit 691d1616e745b8fe91ca55cb6ec5442a92936dbf (HEAD -> feature/databases-connection)
+Author: baimiyishu13 <baimiyishu13@163.com>
+Date:   Fri Dec 15 00:02:02 2023 +0800
+
+    delete main.go line 8-9
+```
+
+##### 🎯 git reset
+
+恢复：
+
++ 恢复最后一次 ： HEAD～1
+
+🍄参数： --haed 
+
+```sh
+git reset --hard HEAD~1
+---
+➜  my_devops_projects git:(feature/databases-connection) git reset --hard HEAD~1
+HEAD is now at bc4fd7c ceshi
+```
 
 
 
+如果不想恢复，是想更正
+
+```sh
+git log
+---
+commit 4711fafd5de738f5b22214dc44511320cba40dfb (HEAD -> feature/databases-connection)
+Author: baimiyishu13 <baimiyishu13@163.com>
+Date:   Fri Dec 15 00:11:00 2023 +0800
+
+    321 - 123
+```
+
+🍄 参数：--soft 但是不需要使用它，直接
+
+```sh
+git reset HEAD~1
+---
+        modified:   main.go
+```
+
+再次修改代码后提交
+
+
+
+##### 🎯 撤销推送
+
+```
+git reset --hard HEAD~1
+```
+
+本地撤销了，但是远端仓库还在
+
+🔔 直接git push 是不被允许的
+
+```sh
+git push --force
+```
+
++ 强制更改了远端仓库 
+
+‼️ 重要提示：其实不应该在这么做，会造成其他人在提交时出现问题
+
+替代方案：还原,在主分支中
+
+```
+git revert 哈希值
+```
 
 
 
