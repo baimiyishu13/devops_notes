@@ -37,7 +37,7 @@ Git 在软件开发中，用于管理应用程序代码
 
 
 
-#### 👀 如何实现工作
+#### 🚀  如何实现工作
 
 + 远端仓库
 + 本地仓库
@@ -85,7 +85,7 @@ git clone git@gitlab.com:baimiyishu13/my_devops_notes.git
 
 
 
-#### 🎨 Git 工作
+#### 🚀  Git 工作
 
 在Git工作时，了解不同的状态非常必要
 
@@ -197,7 +197,7 @@ To gitlab.com:baimiyishu13/my_devops_notes.git
 
 
 
-#### 🧩 初始化本地仓库
+#### 🚀  初始化本地仓库
 
 假设创建了一些代码，并且想检查推送，而并非克隆现有的
 
@@ -266,7 +266,7 @@ git push --set-upstream origin main
 
 
 
-#### 🦠 分支
+#### 🚀 分支
 
 如果在开发持续集成持续交付的管道，那么应该始终使用 main 分支，还将出发测试代码的管道
 
@@ -367,8 +367,197 @@ git push --set-upstream origin feature/databases-connection
 
 
 
-#### 🏆 合并请求
+#### 🚀 合并请求
 
 使用git处理代码时常见的一种做法，当开发人员完成功能实现 或者 错误修复其他开发人员审查更改 直到合并到 mian 
 
 + main 是必须受到保护的
+
+分支更改提交了一些变化：
+
+ ![image-20231214205231236](./images/03_Git_Notes/image-20231214205231236.png)
+
+两个变化不在 main 分支中
+
+🎯 新建合并请求
+
+
+
+#### 🚀 删除分支
+
+通常团队离开分支后：可以合并后立刻删除分支
+
+如果有一些错误，可以创建一个新的分支 ，一个错误的修复分支，修复该问题
+
++ 编辑
++ 进行功能的补充
+
+好处是你最终不会得到 很多个分支，以至于没人知道哪个是活跃的，哪一项是否完成了合并
+
+
+
+在Ui删除分支后本地还存在
+
+清理【已经删除的分支】
+
+```sh
+git checkout main
+git status
+git pull
+git branch
+---
+➜  my_devops_projects git:(main) git branch -d feature/databases-connection
+```
+
+
+
+#### 🚀 避免合并冲突
+
+开发1：在分支feature/databases-connection  ceshi2.md文件中增加了一些内容
+
+开发2：也在分支feature/databases-connection ceshi2.md文件中增加了一些内容
+
+
+
+开发1不知道开发2 修改了文件，在开发1提交时：
+
+```sh
+➜  my_devops_projects git:(feature/databases-connection) git push
+To gitlab.com:baimiyishu13/my_devops_projects.git
+ ! [rejected]        feature/databases-connection -> feature/databases-connection (fetch first)
+error: failed to push some refs to 'gitlab.com:baimiyishu13/my_devops_projects.git'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+```
+
+提示再推送前：pull
+
+示表明你的本地分支和远程分支之间存在分
+
+```sh
+hint:   git config pull.rebase false  # merge
+hint:   git config pull.rebase true   # rebase
+hint:   git config pull.ff only       # fast-forward only
+```
+
+可以选择合并：
+
++ 这会将远程分支的更改合并到本地分支上
+
+```sh
+git pull
+---
+git add
+git commit -m “cehsi”
+git push
+```
+
+
+
+#### 🚀 解决合并问题
+
+实际使用本地编译器：GoLand
+
+GitLab上修改：
+
+![image-20231214220001992](./images/03_Git_Notes/image-20231214220001992.png)
+
+Goland修改：
+
+```
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hello GitLab!")
+	fmt.Println("Hello Goland-321!")
+}
+```
+
+Goland推送时会发生：推送被拒绝
+
+ 需要决定
+
+1. 选择推送自己的
+2. 选择同步另一方的
+3. 选择手动
+
+ ```go
+ package main
+ 
+ import "fmt"
+ 
+ func main() {
+ <<<<<<< HEAD
+ 	fmt.Println("Hello GitLab!")
+ 	fmt.Println("Hello Goland-321!")
+ =======
+   fmt.Println("Hello GitLab-123!")
+ 	fmt.Println("Hello Goland!")
+ >>>>>>> origin/feature/databases-connection
+ 
+ }
+ ```
+
+ui：本地变化 - 最终结果-  远端变化
+
++ 所以必须绝对最终的结果是什么
++ 开发会去相互沟通，为什么要做出这些改变，变化是否正确等等，也许更改都需要合并
+
+ ![image-20231214221558415](./images/03_Git_Notes/image-20231214221558415.png)
+
+解决冲突后提交合并也可以使用命令：
+
+```sh
+git rebase --continue
+git push
+```
+
+
+
+#### 🚀 忽略文件
+
+每个开发人员特有的文件
+
+比如打开项目后，自动创建的 `.idea` 显然不需要这个文件夹 ，所以不应该推送到存储库
+
+不需要作为代码的一部分:
+
+🎯 创建文件 `./gitigmore`
+
+```
+.idea/*
+build/*
+```
+
+##### 🎯 git rm -r --cached
+
++ 将 `.idea/` 目录及其内容从 Git 仓库的暂存区（index）中移除，从而停止追踪这些文件。选项 `-r` 表示递归，用于移除目录及其内容。
+
+```
+➜  my_devops_projects git:(feature/databases-connection) ✗ git rm -r --cached .idea/
+rm '.idea/.gitignore'
+rm '.idea/modules.xml'
+rm '.idea/my_devops_projects.iml'
+rm '.idea/vcs.xml'
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
