@@ -1,46 +1,29 @@
-<p align="center">
-  <img src="./images/README/image-20231213211434715.png" alt="DevOps笔记仓库截图">
-</p>
+![image-20231214201756453](./images/README/image-20231214201756453.png)
 
 
-# DevOps 笔记仓库
 
-欢迎来到我的DevOps笔记仓库！这个仓库包含了一些关于DevOps领域的学习笔记、示例代码和实用资源。
+## 🌐 目录
 
-
-## 内容
-
-- [介绍](#介绍)
-- [如何使用](#如何使用)
-- [示例代码](#示例代码)
-- [贡献](#贡献)
-- [许可证](#许可证)
-
-## 介绍
-
-这个仓库旨在帮助你学习和理解DevOps领域的关键概念和最佳实践。包含的内容可能涵盖以下方面：
-
-- CI/CD流水线
-- 自动化部署
-- 容器化和容器编排
-- 云服务和基础设施即代码
-- 监控和日志
-- ...
-
-## 如何使用
-
-1. **克隆仓库**
-
-    ```bash
-    git clone https://gitlab.com/baimiyishu13/my_devops_notes.git
-    ```
-
-2. **浏览学习笔记**
-
-    在仓库中浏览各个目录以查看不同主题的学习笔记。
-
-3. **运行示例代码**
-
-    如果仓库包含示例代码，按照相应的说明运行和测试代码。
+- [🚀 介绍 & DevOps 风采](#introduction)
+- [💻 OS & Linux ](#os-linux)
+- [🔗 Git - 版本控制](./03_Git_Notes.md)
+- [🧰 Build & Package Manager 工具](#build-tools)
+- [☁️ 云 & IaaS ](#cloud-iaas)
+- [🐳 Docker - 容器](#docker)
+- [🚦 Jenkins - 持续集成](#jenkins)
+- [☁️ AWS - 云](#aws)
+- [⚙️ K8s - 容器编排](#k8s)
+- [🚀 云上 K8s - 无尽可能性](#cloud-k8s)
+- [🌍 ICA-Terraform - 基础设施之梦](#terraform)
+- [🐍 Python - 编写脚本](#python)
+- [🚀 Go - 编程的无尽星辰](#go)
+- [🔐 Ansible - 自动化之剑](#ansible)
+- [📊 Prometheus & Grafana - 监控世界的守护者](#prometheus-grafana)
 
 
+
+## 🌈 关于
+
+如果你有任何问题，建议或贡献，欢迎联系我。你也可以在我的 [GitHub Profile](https://github.com/your-username) 查看其他项目和资源。
+
+Happy DevOps Learning! 🌟
