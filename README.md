@@ -7,7 +7,7 @@
 - [🚀 介绍 & DevOps 风采](#introduction)
 - [💻 OS & Linux ](#os-linux)
 - [🔗 Git - 版本控制](./notes/03_Git_Notes.md)
-- [🧰 Build & Package Manager 工具](#build-tools)
+- [🧰 Build & Package Manager 工具](./04_Build_Package_Tools.md)
 - [☁️ 云 & IaaS ](#cloud-iaas)
 - [🐳 Docker - 容器](#docker)
 - [🚦 Jenkins - 持续集成](#jenkins)
