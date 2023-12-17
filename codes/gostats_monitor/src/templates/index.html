@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Monitor</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>System Monitor</h1>
+    <div class="info-box">
+        <div class="info-label">CPU Usage:</div>
+        <span class="percentage">{{.CPU_PERCENT}}%</span>
+        <div class="progress-bar">
+            <div class="progress" style="width: {{.CPU_PERCENT}}%;"></div>
+        </div>
+    </div>
+    <div class="info-box">
+        <div class="info-label">Memory Usage:</div>
+        <span class="percentage">{{.MEM_PERCENT}}%</span>
+        <div class="progress-bar">
+            <div class="progress" style="width: {{.MEM_PERCENT}}%;"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
