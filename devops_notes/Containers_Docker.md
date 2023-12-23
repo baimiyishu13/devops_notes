@@ -29,7 +29,7 @@
 + 安装 docker【Mac】 ：https://docs.docker.com/desktop/install/mac-install/
 
 ```sh
-✗ docker -v
+$ docker -v
 Docker version 23.0.5, build bc4487a
 ```
 
@@ -72,7 +72,7 @@ Server:
 + 运行了一个进程并 echo `hello world`
 
 ```sh
-➜  ~ docker run busybox echo hello world
+$ docker run busybox echo hello world
 Unable to find image 'busybox:latest' locally
 latest: Pulling from library/busybox
 29f4353257d6: Pull complete
@@ -86,14 +86,14 @@ hello world
 再次运行：【不再需要下载】
 
 ```sh
-➜  ~ docker run busybox echo hello world
+$ docker run busybox echo hello world
 hello world
 ```
 
 镜像：
 
 ```sh
-➜  ~ docker images
+$ docker images
 REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
 busybox      latest    23466caa55cb   4 days ago    4.04MB
 ```
@@ -106,12 +106,8 @@ busybox      latest    23466caa55cb   4 days ago    4.04MB
 
 运行容器：
 
-```
-➜  ~ docker run -it ubuntu
-root@ebc33dfe0a56:/# dpkg -l | wc -l
-106
-root@ebc33dfe0a56:/# exit
-exit
+```sh
+$ sh docker run -it ubuntu
 ```
 
 + 运行一个简单的`ubuntu`系统
@@ -121,9 +117,310 @@ exit
 
 镜像大小：
 
-```
-➜  ~ docker images
+```sh
+$ docker images
 REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
 ubuntu       latest    da935f064913   10 days ago   69.3MB
 ```
 
+尝试在我们的容器中运行`figlet`
+
+```sh
+apt-get update
+apt-get install figlet
+```
+
+一分钟后，`figlet`安装完毕！
+
+```sh
+root@792c40d4a504:/# figlet Hello
+ _   _      _ _
+| | | | ___| | | ___
+| |_| |/ _ \ | |/ _ \
+|  _  |  __/ | | (_) |
+|_| |_|\___|_|_|\___/
+```
+
+像平常一样，通过注销 shell 来退出容器。
+
++ （例如用`^D`或`exit`）
+
+🔔 主机和容器是独立的东西，在主机上安装某些东西不会将其暴露给容器，反之亦然。
+
++ 可以重复 花时间定制的容器，这不是 Docker 的默认工作流程
++ 如果我们需要在容器中安装某些东西，请构建自定义映像
++ 看起来很复杂其实非常简单【非常强调自动化和可重复性】
+
+🎯 如果我们启动一个新容器并尝试`figlet`？
+
+```sh
+$ docker run -it ubuntu
+root@b13c164401fb:/# figlet
+bash: figlet: command not found
+```
+
++ 启动了一个*全新的容器*。
++ 使用了基本的 Ubuntu 镜像，`figlet`此处不提供。
+
+
+
+🚀 VM vs Docker 开发环境
+
+🎯 本地开发环境
+
+当我们使用本地虚拟机（例如 VirtualBox 或 VMware）时，我们的工作流程如下所示：
+
+- 从基本模板创建虚拟机（Ubuntu、CentOS...）
+- 安装包，设置环境
+- 从事项目工作
+- 完成后，关闭虚拟机
+- 下次我们需要处理项目时，按照离开时的方式重新启动虚拟机
+
+随着时间的推移，虚拟机配置会不断发展、出现差异，没有一种干净、可靠、确定的方式来提供该环境。
+
+
+
+🎯 使用 Docker 进行本地开发
+
+使用 Docker，工作流程如下所示：
+
+- 使用我们的开发环境创建容器镜像
+- 使用该镜像运行容器
+- 从事项目工作
+- 完成后，关闭容器
+- 下次我们需要处理项目时，启动一个新容器
+- 如果我们需要调整环境，我们创建一个新图像
+
+我们对我们的环境有清晰的定义，并且可以可靠地与他人共享。
+
+
+
+### ⛳️ 容器背景
+
+我们的第一个容器是*交互式的*。
+
+我们现在将了解如何：
+
+- 运行非交互式容器。
+- 在后台运行容器。
+- 列出正在运行的容器。
+- 检查容器的日志。
+- 停止一个容器。
+- 列出已停止的容器
+
+#### 🚀 非交互式容器
+
+我们将运行一个小型自定义容器。【该容器仅显示每秒的时间】
+
+```dockerfile
+FROM alpine:latest
+CMD ["sh", "-c", "while true; do date; sleep 1; done"]
+```
+
+这个容器将永远运行。要停止它，按`^C`
+
+```sh
+$ docker run clock
+Sat Dec 23 06:34:15 UTC 2023
+Sat Dec 23 06:34:16 UTC 2023
+```
+
+执行按`^C` 会发生：
+
+`SIGINT`被发送到容器，这意味着：`SIGINT`被发送到 PID 1（默认情况）
+
+- `SIGINT`运行时被发送到*前台进程*`-ti`
+
+但 PID 1 有一个特殊情况：它忽略所有信号！
+
+- 除了`SIGKILL`和`SIGSTOP`
+- 除了显式处理的信号
+
+🔔有很多情况`^C`不会停止容器。【docker kill】
+
+
+
+#### 🚀 在后台运行容器
+
+容器可以在后台启动，带有`-d`标志（守护进程模式）：
+
+```sh
+$ docker run -d clock
+4e795afdea6d5d83930bbc3d0109b6dbbf589195069ed30020963a8d55742da8
+```
+
+- 我们看不到容器的输出,但Docker 为我们提供了容器的 ID。
+
+
+
+#### 🚀 查看容器
+
+`docker ps` 就像Linux `ps`命令一样，使用 列出正在运行的进程。
+
+```sh
+$ docker ps
+CONTAINER ID   IMAGE     COMMAND                   CREATED              STATUS              PORTS     NAMES
+4e795afdea6d   clock     "sh -c 'while true; …"   About a minute ago   Up About a minute             condescending_curran
+```
+
+- 容器的ID
+- 用于启动容器的镜像
+- 容器已经运行 ( `Up`) 几分钟了
+- 其他信息（COMMAND、PORTS、NAMES）
+
+🤔 当许多容器已在运行时，仅查看最后启动的容器可能会很有用
+
++ 这可以通过（“Last”）标志来实现`-l`：
+
+```sh
+$ docker ps -l
+```
+
+
+
+🎯 只查看容器的ID
+
+```sh
+docker ps -q
+```
+
++ 列出所有状态的容器的容器ID `-aq`
+
+
+
+#### 🚀 容器日志 
+
+Docker 正在记录容器输出
+
+```sh
+$ docker logs 4e7
+```
+
+- 指定了容器 ID 的*前缀、当然，您可以指定完整的 ID。
+- 该`logs`命令将输出容器的 *完整日志。*（有时，这会太多。让我们看看如何解决这个问题。）
+
+为了避免被十一个页面的输出垃圾邮件，我们可以使用以下
+
++ `--tail`选项
++ `-f`，可以跟踪容器的日志（这将显示日志文件中的最后一行。然后，它将继续实时显示日志）
+
+
+
+#### 🚀 停止容器
+
+可以通过两种方式终止分离的容器。
+
+- 使用命令杀死它`docker kill`。【通过使用信号立即停止容器】
+- 使用命令停止它`docker stop`。【更优雅。它发送一个`TERM`信号，10秒后，如果容器还没有停止，它发送`KILL.`】
+
+🔔 提醒：该`KILL`信号无法被拦截，会强制终止容器
+
+停止其中一个容器：
+
++ `stop`命令`kill`可以采用多个容器 ID。
+
+```sh
+$ docker stop b9
+```
+
+这将需要 10 秒：
+
+- Docker发送TERM信号；
+- 容器不会对此信号做出反应（这是一个简单的 Shell 脚本，没有特殊的信号处理）；
+- 10秒后，由于容器仍在运行，Docker发送KILL信号；
+- 这将终止容器。
+
+```sh
+$ docker kill 4e
+```
+
++ 这些容器将立即终止（没有 10 秒的延迟）。
+
+
+
+### ⛳️ 了解 Docker 镜像
+
+- 什么是 image。
+- 什么是层。
+
+#### 🚀 What is Image?
+
+image = 文件+元数据
+
+- 这些文件构成了我们容器的根文件系统。
+- 元数据可以指示很多事情，例如 【作者信息、启动命令、环境变量等等】
+
+镜像由层*组成，从概念上讲，镜像彼此堆叠
+
+- 每层都可以添加、更改和删除文件和/或元数据。
+- 可以共享层以优化磁盘使用、传输时间和内存使用。
+
+
+
+#### 🚀 镜像层
+
+Java Web 应用程序示例
+
+以下每一项都对应一层：
+
+- CentOS基础OS层
+- 由我们本地 IT 添加的包和配置文件
+- JRE
+- Tomcat
+- 应用程序的依赖项
+- 应用程序代码和包
+- 应用程序配置
+
+（注意：应用程序配置通常由编排工具添加。）
+
+在堆叠层中，我们只能在最上层写入，其他层都是可读的
+
++ 顶层：读写层
++ 下面的层都是只读
+
+
+
+🎯 容器和镜像的区别
+
+- 镜像是只读文件系统。
+- 容器是一组封装的进程，在该文件系统的读写副本中运行。
+- 为了优化容器启动时间，使用 写时复制 而不是常规复制。
+- `docker run`从给定的镜像启动一个容器。
+
+ <img src="./images/Containers_Docker/image-20231223154452054.png" alt="image-20231223154452054" width="50%" />
+
+🤔 如果镜像是只读的，我们如何更改它？
+
+- 我们不去改变镜像层。
+- 我们从该镜像创建一个新容器。
+- 然后我们对该容器进行更改。
+- 当我们对这些更改感到满意时，我们将它们转换为新层。
+- 通过将新图层堆叠在旧镜像之上来创建新镜像。
+
+👀 先有鸡还是先有蛋的问题
+
+- 创建镜像的唯一方法是“冻结”容器。
+- 创建容器的唯一方法是实例化镜像。
+
+
+
+如何搜索和下载 image 。
+
++ docker search、dockerhub仓库等等
+
+🤔 image 标签以及何时使用它们 ？
+
++ 不指定默认：latest
+
+⚠️：请指定标签：投入生产时，确保各处使用相同的版本，以确保以后的可重复性。
+
+
+
+#### 🚀 构建镜像
+
+1. 交互式：修改容器内容后使用docker commit
+   + 手动过程=糟糕。
+2. DockerFIle
+   + 自动化流程=好。
+
+🎉 使用 Dockerfile 构建 Docker 镜像
