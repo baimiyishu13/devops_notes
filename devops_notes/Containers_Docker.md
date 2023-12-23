@@ -12,15 +12,7 @@
 
 [toc]
 
-- [我们的培训环境](https://2022-11-live.container.training/docker.yml.html#toc-our-training-environment)
-- [我们的第一个容器](https://2022-11-live.container.training/docker.yml.html#toc-our-first-containers)
-- [背景容器](https://2022-11-live.container.training/docker.yml.html#toc-background-containers)
-- [了解 Docker 镜像](https://2022-11-live.container.training/docker.yml.html#toc-understanding-docker-images)
-- [交互式构建图像](https://2022-11-live.container.training/docker.yml.html#toc-building-images-interactively)
-- [使用 Dockerfile 构建 Docker 镜像](https://2022-11-live.container.training/docker.yml.html#toc-building-docker-images-with-a-dockerfile)
-- [`CMD`和`ENTRYPOINT`](https://2022-11-live.container.training/docker.yml.html#toc-cmd-and-entrypoint)
-- [在构建期间复制文件](https://2022-11-live.container.training/docker.yml.html#toc-copying-files-during-the-build)
-- [练习——编写 Dockerfile](https://2022-11-live.container.training/docker.yml.html#toc-exercise--writing-dockerfiles)
+## 阶段一：
 
 ### ⛳️ 学习环境
 
@@ -582,7 +574,55 @@ CMD ["hello world"]
 
 
 
-#### 🚀 实验
+🧡 回顾
+
+- `ocker run myimage`执行`ENTRYPOINT`+`CMD`
+- `docker run myimage args`执行`ENTRYPOINT`+ `args`（覆盖`CMD`）
+- `docker run --entrypoint prog myimage`执行`prog`（覆盖两者）
+
+
+
+🎯何时使用`ENTRYPOINT`vs`CMD`
+
+`ENTRYPOINT`非常适合“容器化二进制文件”。
+
+例子：`docker run consul --help`（假装该`docker run`部分不存在！）
+
+`CMD`非常适合具有多个二进制文件的图像。
+
+例子：`docker run busybox ifconfig`（表明我们要运行*哪个程序是有意义的！*）
+
+
+
+###  ⛳️在构建期间复制文件
+
+Dockerfile 关键字：`COPY`.
+
+- 我们可以`COPY`递归地遍历整个目录
+
+- 可以这样做，例如`COPY . .`
+
+  （但可能需要一些额外的预防措施以避免复制太多）
+
+- 在较旧的 Dockerfile 中，您可能会看到以下`ADD`命令；认为它已弃用
+
+  （类似`COPY`但可以自动提取档案）
+
+我们可以创建一个名为`.dockerignore`
+
+（在构建上下文的顶层）
+
+- 它可以包含要忽略的文件名和全局变量
+
+- 它们不会被发送给建筑商
+
+  （并且不会最终出现在结果图像中）
+
+有关小细节请参阅[文档](https://docs.docker.com/engine/reference/builder/#dockerignore-file)
+
+
+
+###  ⛳️ 构建镜像实验
 
 1. 交互式：修改容器内容后使用docker commit
    + 手动过程=糟糕。
@@ -674,3 +714,63 @@ CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS         PORTS         
 本地登陆访问
 
  <img src="./images/Containers_Docker/image-20231223163001115.png" alt="image-20231223163001115" width="50%;" />
+
+
+
+---
+
+
+
+## 阶段二：
+
+- [容器网络基础知识](https://2022-11-live.container.training/docker.yml.html#toc-container-networking-basics)
+- [使用 Docker 进行本地开发工作流程](https://2022-11-live.container.training/docker.yml.html#toc-local-development-workflow-with-docker)
+- [容器网络模型](https://2022-11-live.container.training/docker.yml.html#toc-the-container-network-model)
+- [使用容器发现服务](https://2022-11-live.container.training/docker.yml.html#toc-service-discovery-with-containers)
+- [为开发堆栈编写](https://2022-11-live.container.training/docker.yml.html#toc-compose-for-development-stacks)
+- [练习 — 编写 Compose 文件](https://2022-11-live.container.training/docker.yml.html#toc-exercise--writing-a-compose-file)
+
+### ⛳️ 容器网络基础知识
+
+目标
+
+现在将在容器中运行网络服务（接受请求）。
+
+- 在容器中运行网络服务。
+- 连接到该网络服务。
+- 查找容器的 IP 地址。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
