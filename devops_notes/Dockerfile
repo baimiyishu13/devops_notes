@@ -1,4 +1,4 @@
-FROM alpine:latest
-ENV TZ=Asia/Shanghai
-CMD ["sh", "-c", "while true; do date; sleep 1; done"]
-
+FROM ubuntu
+RUN apt-get update
+RUN ["apt-get", "install", "figlet"]
+ENTRYPOINT figlet -f script HELLO

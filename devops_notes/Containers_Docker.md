@@ -404,7 +404,7 @@ Java Web 应用程序示例
 
 
 
-如何搜索和下载 image 。
+🎯如何搜索和下载 image 。
 
 + docker search、dockerhub仓库等等
 
@@ -416,7 +416,173 @@ Java Web 应用程序示例
 
 
 
-#### 🚀 构建镜像
+#### 🚀 构建镜像概念
+
+`Dockerfile`概述
+
+- `Dockerfile`是 Docker 镜像的构建配方。
+- 它包含一系列指令，告诉 Docker 如何构建镜像。
+- 该`docker build`命令从`Dockerfile`.
+
+非常简单的案例：
+
+```dockerfile
+FROM ubuntu
+RUN apt-get update & apt-get install -y figlet
+```
+
+- `FROM`表示我们构建的基础镜像。
+- 每`RUN`行都将在构建过程中由 Docker 执行。
+- 我们的`RUN`命令**必须是非交互式的。**（构建期间无法向 Docker 提供任何输入。）
+- 在许多情况下，我们会将`-y`标志添加到`apt-get`.
+
+保存我们的文件，然后执行：
+
+```
+$ docker build -t figlet .
+```
+
+- `-t`表示要应用于图像的标签。
+- `.`*指示构建上下文*的位置。
+
+
+
+🤔 再次运行相同的构建，它将是瞬时的。为什么？
+
+- 在每个构建步骤之后，Docker 都会拍摄生成的映像的快照。
+- 在执行步骤之前，Docker 检查它是否已经构建了相同的序列。
+
+
+
+🎯 sh -c
+
+因为没有自己的解释器，而是需要外包给shell
+
++ 这称为*exec 语法*
+
+执行某些操作的 Dockerfile 命令可以有两种形式：
+
+- 纯字符串，或*shell 语法*：
+  `RUN apt-get install -y figlet`
+- JSON 列表，或*exec 语法*：
+  `RUN ["apt-get", "install","-y","figlet"]`
+
+Exec 语法指定要执行的*确切*命令。【要求`/bin/sh`存在于容器中】
+
+Shell 语法指定要包装在`/bin/sh -c "..."`.
+
+一般都使用Shell 语法，Exec语法写起来麻烦
+
+
+
+#### 🚀 CMD`和`ENTRYPOINT
+
+允许我们设置在容器中运行的默认命令
+
+🎯 使用cmd
+
+我们的新 Dockerfile 将如下所示：
+
+```
+FROM ubuntu
+RUN apt-get update
+RUN ["apt-get", "install", "figlet"]
+CMD figlet -f script hello
+```
+
+- `CMD`定义在未给出任何命令时运行的默认命令。
+- 它可以出现在文件中的任何位置。
+- 每一个 `CMD`将取代并覆盖前一个。
+- 🎯因此，虽然你可以有多`CMD` ，但它是没有用的。
+
+构建并测试
+
+```sh
+$ docker build -t hello .
+$ docker run hello
+ _          _   _
+| |        | | | |
+| |     _  | | | |  __
+|/ \   |/  |/  |/  /  \_
+|   |_/|__/|__/|__/\__/
+```
+
+如果我们想要将 shell 放入容器中,只需指定要运行的不同程序：
+
+```sh
+➜  devops_notes git:(main) ✗ docker run -ti hello sh
+#
+```
+
+- 我们指定了`sh`.
+- 它取代了 的值`CMD`。
+
+
+
+🎯 使用`ENTRYPOINT`
+
+我们的新 Dockerfile 将如下所示：
+
+```dockerfile
+FROM ubuntu
+RUN apt-get update
+RUN ["apt-get", "install", "figlet"]
+ENTRYPOINT ["figlet", "-f", "script"]
+```
+
+- `ENTRYPOINT`为容器定义基本命令（及其参数）。
+- 命令行参数将附加到这些参数中。
+- 就像`CMD`,`ENTRYPOINT`可以出现在任何地方，并替换以前的值。
+
+🤔 为什么我们使用 JSON 语法`ENTRYPOINT`？
+
+- 当 CMD 或 ENTRYPOINT 使用字符串语法时，它们会被包装在`sh -c`.
+- 为了避免这种包装，我们可以使用 JSON 语法。
+
+如果我们使用`ENTRYPOINT`字符串语法怎么办：这将在图像中运行以下命令`figlet`：
+
+```sh
+sh -c "figlet -f script" Hello
+```
+
+构建并测试
+
+```sh
+➜  devops_notes git:(main) ✗ docker run hello "HELLO DOCKER"
+ ,      ___    _      _    __      ____    __    ___  ,      ___  , __
+/|   | / (_)\_|_)  \_|_)  /\_\/   (|   \  /\_\/ / (_)/|   / / (_)/|/  \
+ |___| \__    |      |   |    |    |    ||    ||      |__/  \__   |___/
+ |   |\/     _|     _|   |    |   _|    ||    ||      | \   /     | \
+ |   |/\___/(/\___/(/\___/\__/   (/\___/  \__/  \___/ |  \_/\___/ |  \_/
+```
+
+
+
+🎯 `CMD`和`ENTRYPOINT`一起使用
+
+如果我们想为容器定义默认参数怎么办？将一起使用`ENTRYPOINT`和`CMD`。
+
+- `ENTRYPOINT`将为我们的容器定义基本命令。
+- `CMD`将定义该命令的默认参数。
+- 它们*都*必须使用 JSON 语法。
+
+我们的新 Dockerfile 将如下所示：
+
+```dockerfile
+FROM ubuntu
+RUN apt-get update
+RUN ["apt-get", "install", "figlet"]
+ENTRYPOINT ["figlet", "-f", "script"]
+CMD ["hello world"]
+```
+
+- `ENTRYPOINT`为容器定义基本命令（及其参数）。
+- 如果我们在启动容器时没有指定额外的命令行参数，`CMD`则会附加 的值。
+- 否则，将使用我们额外的命令行参数而不是`CMD`.
+
+
+
+#### 🚀 实验
 
 1. 交互式：修改容器内容后使用docker commit
    + 手动过程=糟糕。
@@ -472,6 +638,39 @@ CMD ["./app"]
 
 构建镜像：
 
+![image-20231223162023918](./images/Containers_Docker/image-20231223162023918.png)
+
+docker镜像
+
 ```sh
+➜  gostats_monitor git:(main) ✗ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+monitor      latest    824b03a354bd   12 minutes ago   16.7MB
 ```
 
+查看历史记录【镜像】
+
+```sh
+➜  gostats_monitor git:(main) ✗ docker history monitor
+IMAGE          CREATED          CREATED BY                                       SIZE      COMMENT
+824b03a354bd   30 minutes ago   CMD ["./app"]                                    0B        buildkit.dockerfile.v0
+<missing>      30 minutes ago   EXPOSE map[5050/tcp:{}]                          0B        buildkit.dockerfile.v0
+<missing>      30 minutes ago   COPY /app/src/static ./static # buildkit         2.09MB    buildkit.dockerfile.v0
+<missing>      30 minutes ago   COPY /app/src/templates ./templates # buildk…   1.56kB    buildkit.dockerfile.v0
+<missing>      30 minutes ago   COPY /app/app . # buildkit                       14.6MB    buildkit.dockerfile.v0
+<missing>      35 minutes ago   WORKDIR /app                                     0B        buildkit.dockerfile.v0
+```
+
+运行docker镜像
+
+```sh
+➜  ~ docker run -ti -d -p 5050:5050 --name mac_monitor monitor
+7d3271229b57417fb16dc60fc83073dc4e8bb720c9bf53f1189cce622904f25d
+➜  ~ docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS         PORTS                    NAMES
+7d3271229b57   monitor   "./app"   4 seconds ago   Up 3 seconds   0.0.0.0:5050->5050/tcp   mac_monitor
+```
+
+本地登陆访问
+
+ <img src="./images/Containers_Docker/image-20231223163001115.png" alt="image-20231223163001115" width="50%;" />
