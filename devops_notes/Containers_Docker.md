@@ -1,104 +1,129 @@
 ## 🏆 Containers with Docker
 
+🚀 简介
+
++ 最初编写此内容是为了记录自己学习 Docker 笔记
++ 这些材料内容参考了 jerome Petazzoni 大师和其他 Docker 教学贡献者的视频
++ 按照自己的步调去学习，这里将包含尽可能全的内容
+
+建议：花一些时间阅读 Docker 或者在其他渠道系统学习
+
+## 🌐 目录
+
 [toc]
 
-1. what is containers
-2. docker image
-3. docker vs VM
-4. docker commands
-5. dvelop woth  docker 
-6. Docker Compose
-7. Dockerfile
-8. Push Docker repository
-9. Deployment 
-10. volume
+- [我们的培训环境](https://2022-11-live.container.training/docker.yml.html#toc-our-training-environment)
+- [我们的第一个容器](https://2022-11-live.container.training/docker.yml.html#toc-our-first-containers)
+- [背景容器](https://2022-11-live.container.training/docker.yml.html#toc-background-containers)
+- [了解 Docker 镜像](https://2022-11-live.container.training/docker.yml.html#toc-understanding-docker-images)
+- [交互式构建图像](https://2022-11-live.container.training/docker.yml.html#toc-building-images-interactively)
+- [使用 Dockerfile 构建 Docker 镜像](https://2022-11-live.container.training/docker.yml.html#toc-building-docker-images-with-a-dockerfile)
+- [`CMD`和`ENTRYPOINT`](https://2022-11-live.container.training/docker.yml.html#toc-cmd-and-entrypoint)
+- [在构建期间复制文件](https://2022-11-live.container.training/docker.yml.html#toc-copying-files-during-the-build)
+- [练习——编写 Dockerfile](https://2022-11-live.container.training/docker.yml.html#toc-exercise--writing-dockerfiles)
+
+### ⛳️ 学习环境
+
+本地安装 Docker 【99.99% 的docker 都在linux上，推荐使用 远程Linux】
+
++ 安装 docker【Mac】 ：https://docs.docker.com/desktop/install/mac-install/
+
+```sh
+✗ docker -v
+Docker version 23.0.5, build bc4487a
+```
+
+当然也可以 云虚拟机上安装 Docker
+
+如果是linux
+
++ 登录后，确保您可以运行基本的 Docker 命令：
+
+```sh
+$ docker version
+Client:
+	...
+Server:
+	...
+```
+
+当我们说运行docker 安装docker时，到底是什么意思？
+
+#### 🚀 What is Docker
+
++ 安装docker 实际上意味着：“安装docker 引擎 和 CLI”
++ Docker 引擎：一个守护进程（在后台运行），负责管理容器【就像 VM的管理程序管理 VM一样】
++ 使用Docker CLI 和 Docker引擎 通过API通信 【还有许多其他程序也通过该API】
 
 
 
-#### 🚀 what is containers
+### ⛳️ 第一个容器
 
-+ 以及解决了什么？
-+ 如何使得开发过程更容易、更高效？
-+ 如何解决在部署中的问题？
+目标
 
-##### 🎯 containers ？
++ 看到 Docker 的实际应用
++ 启动你的第一个容器
 
-容器是一种打包应用程序的方式，在容器内有需要的一切
+#### 🚀 非常简单的容器
 
-+ 依赖项
-+ 所有必要的配置文件
+只需运行该命令：
 
-便携的：轻松的共享和移动，可移植性高，一切都打包在一个隔离环境中，赋予了一些优势
++ 使用了现有的最小、最简单的 image 之一：`busybox`
++ 运行了一个进程并 echo `hello world`
 
-+ 开发和部署过程更加高效
+```sh
+➜  ~ docker run busybox echo hello world
+Unable to find image 'busybox:latest' locally
+latest: Pulling from library/busybox
+29f4353257d6: Pull complete
+Digest: sha256:ba76950ac9eaa407512c9d859cea48114eeff8a6f12ebaa5d32ce79d4a017dd8
+Status: Downloaded newer image for busybox:latest
+hello world
+```
 
+如果 Docker 安装是全新的，还会看到一些额外的行，对于镜像的下载`busybox`
 
+再次运行：【不再需要下载】
 
-##### 🎯 repository
+```sh
+➜  ~ docker run busybox echo hello world
+hello world
+```
 
-存储仓库
+镜像：
 
-+ 私有
-+ 公有 DockerHub
-
-可以推送所有容器镜像到仓库
-
-
-
-##### 🎯 改进开发过程
-
-容器之前的开发过程：
-
-+ 不得不在本季安装依赖等应用程序 
-
-容器开发：
-
-+ 不必在本机系统安装如何服务，因为容器是自己隔离工作的 【特点版本 - 所有配置 - 启动脚本等等】
-
-Devops 唯一需要做的可能就是：安装服务器Containers？运行docker images
-
-
-
-#### 🚀 containers vs image
-
- 在技术上讲：containers 是由镜像组成的，所以有
-
-+ 相互叠加的镜像层
-+ Linux Base image ， Linux不同发型版本的镜像
-+ 应用程序image
-
-> 如何容器 image都是由层来组成的
-
-image：实际上就是包，连同代码、配置文件、依赖等等
-
-容器：本地拉取image 运行
-
-
-
-#### 🚀 docker vs VM
-
-区别差异：
-
-操作系统的组成：
-
-+ VM：硬件 -虚拟化软件 -  操作系统（内核OS） - 应用程序
-
-docker - VM 都是虚拟化的工具
-
-它们都虚拟化了哪些部分
-
-+ Docker：虚拟化应用程序层，所以pull一个image时 包含【操作系统、应用程序】使用主机内核
-+ VM：有自己的内核和应用程序层，因为虚拟化了整个操作系统
-
-其他区别：
-
-1. 大小
-2. 速度
-3. 兼容性
+```sh
+➜  ~ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+busybox      latest    23466caa55cb   4 days ago    4.04MB
+```
 
 
 
 
 
+#### 🚀 更有用的容器
 
+运行容器：
+
+```
+➜  ~ docker run -it ubuntu
+root@ebc33dfe0a56:/# dpkg -l | wc -l
+106
+root@ebc33dfe0a56:/# exit
+exit
+```
+
++ 运行一个简单的`ubuntu`系统
++ -it`是 的简写`-i -t
+  + `-i`告诉 Docker 将我们连接到容器的标准输入。【input / output】
+  + `-t`告诉 Docker 我们需要一个伪终端。【terminal】
+
+镜像大小：
+
+```
+➜  ~ docker images
+REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
+ubuntu       latest    da935f064913   10 days ago   69.3MB
+```
 
