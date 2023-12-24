@@ -41,7 +41,7 @@ Server:
 
 当说运行docker 安装docker时，到底是什么意思？
 
-#### 🚀 What is Docker
+🚀 What is Docker
 
 + 安装docker 实际上意味着：“安装docker 引擎 和 CLI”
 + Docker 引擎：一个守护进程（在后台运行），负责管理容器【就像 VM的管理程序管理 VM一样】
@@ -56,7 +56,7 @@ Server:
 + 看到 Docker 的实际应用
 + 启动你的第一个容器
 
-#### 🚀 非常简单的容器
+🚀 非常简单的容器
 
 只需运行该命令：
 
@@ -92,9 +92,7 @@ busybox      latest    23466caa55cb   4 days ago    4.04MB
 
 
 
-
-
-#### 🚀 更有用的容器
+🚀 更有用的容器
 
 运行容器：
 
@@ -200,7 +198,9 @@ bash: figlet: command not found
 - 停止一个容器。
 - 列出已停止的容器
 
-#### 🚀 非交互式容器
+
+
+🚀 非交互式容器
 
 将运行一个小型自定义容器。【该容器仅显示每秒的时间】
 
@@ -232,7 +232,7 @@ Sat Dec 23 06:34:16 UTC 2023
 
 
 
-#### 🚀 在后台运行容器
+🚀 在后台运行容器
 
 容器可以在后台启动，带有`-d`标志（守护进程模式）：
 
@@ -245,7 +245,7 @@ $ docker run -d clock
 
 
 
-#### 🚀 查看容器
+🚀 查看容器
 
 `docker ps` 就像Linux `ps`命令一样，使用 列出正在运行的进程。
 
@@ -280,7 +280,7 @@ docker ps -q
 
 
 
-#### 🚀 容器日志 
+🚀 容器日志 
 
 Docker 正在记录容器输出
 
@@ -298,7 +298,7 @@ $ docker logs 4e7
 
 
 
-#### 🚀 停止容器
+🚀 停止容器
 
 可以通过两种方式终止分离的容器。
 
@@ -335,7 +335,7 @@ $ docker kill 4e
 - 什么是 image。
 - 什么是层。
 
-#### 🚀 What is Image?
+🚀 What is Image?
 
 image = 文件+元数据
 
@@ -349,7 +349,7 @@ image = 文件+元数据
 
 
 
-#### 🚀 镜像层
+🚀 镜像层
 
 Java Web 应用程序示例
 
@@ -408,7 +408,7 @@ Java Web 应用程序示例
 
 
 
-#### 🚀 构建镜像概念
+🚀 构建镜像概念
 
 `Dockerfile`概述
 
@@ -467,7 +467,7 @@ Shell 语法指定要包装在`/bin/sh -c "..."`.
 
 
 
-#### 🚀 CMD`和`ENTRYPOINT
+🚀 CMD`和`ENTRYPOINT
 
 允许设置在容器中运行的默认命令
 
@@ -905,13 +905,678 @@ Docker 有“网络”。
 可以通过`docker network`命令来管理它们；例如：
 
 ```sh
+$ docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+2cdeb8bcff4d   bridge    bridge    local
+4f9ceb6aa50f   host      host      local
+bbd167217c0d   none      null      local
+```
+
+可以创建新的网络（使用`docker network create`）。
+
+（注意：网络`none`和`host`是特殊的；暂时将它们放在一边。）
+
+
+
+需要先了解一下概念：
+
+🤔 什么是网络？
+
+从概念上讲，Docker“网络”是一个虚拟交换机
+
+- 默认情况下，容器连接到单个网络（但它们可以连接到零个或多个网络，甚至是动态连接）
+- 每个网络都有自己的子网（IP 地址范围）
+- 网络可以是本地的（对于单个 Docker 引擎）或全局的（跨多个主机）
+- 容器可以具有*网络别名*，提供基于 DNS 的服务发现（每个网络都有自己的“域”、“区域”或“范围”）
+
+🤔 服务发现
+
+- 可以为容器指定网络别名
+
+  （例如与`docker run --net some-network --net-alias db ...`）
+
+- 在同一网络中运行的容器可以解析该网络别名
+
+  （即如果他们在 上进行 DNS 查找`db`，它将给出容器的地址）
+
+- 可以`db`在每个网络中有不同的容器
+
+  （这可以避免不同堆栈之间的命名冲突）
+
+- 命名容器时，它会自动将该名称添加为网络别名
+
+  （即`docker run --name xyz ...`就像`docker run --net-alias xyz ...`
+
+🤔 网络隔离
+
+网络是隔离的
+
+- 默认情况下，网络A中的容器无法访问网络B中的容器
+- 连接到网络 A 和 B 的容器可以充当路由器或代理
+- 始终可以通过 Docker 主机地址访问已发布的端口
+
+ <img src="./images/Containers_Docker/image-20231224152114084.png" alt="image-20231224152114084" width="70%;" />
+
+
+
+🚀 CNM vs CNI
+
+- CNM是Docker使用的模型
+
+- Kubernetes 使用不同的模型，围绕 CNI 架构
+
+  *（CNI是容器引擎和CNI插件*之间的一种API ）
+
+Docker 模型：
+
+- 多个隔离网络
+- 每个网络的服务发现
+- 网络互连需要额外的步骤
+
+Kubernetes模型：
+
+- 单一平面网络
+- 每个命名空间的服务发现
+- 网络隔离需要额外的步骤（网络策略）
+
+
+
+🚀 创建网络
+
+创建一个名为 的网络`dev`。
+
+```sh
+➜  ~ docker network create dev
+e78fc49c6dc1b51cb8f6f1382028819a8266485fa6cffd2bc33a952a1a59ffeb
+```
+
+现在可以使用以下命令查看网络`network ls`：
+
+```sh
+➜  ~ docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+2cdeb8bcff4d   bridge    bridge    local
+e78fc49c6dc1   dev       bridge    local
+4f9ceb6aa50f   host      host      local
+bbd167217c0d   none      null      local
+```
+
+将容器放置在网络上
+
+```sh
+docker run -d --name web --net dev  nginx
+```
+
+从这个新容器中，可以使用分配的名称解析并 ping 另一个容器：
+
+```sh
+➜  ~ docker run -ti --net dev alpine sh
+/ # ping web
+PING web (172.18.0.3): 56 data bytes
+64 bytes from 172.18.0.3: seq=0 ttl=64 time=0.865 ms
+
+/ # nslookup web
+Server:		127.0.0.11
+Address:	127.0.0.11:53
+
+Non-authoritative answer:
+
+Non-authoritative answer:
+Name:	web
+Address: 172.18.0.3
+```
+
+称解析由动态解析器实现
+
+
+
+⛳️ 使用容器发现服务
+
+- 容器名称是唯一的（只能有一个`--name redis`）
+
+- 网络别名不唯一
+
+- 我们可以在不同的网络中使用相同的网络别名：
+
+  ```
+  docker run --net dev --net-alias redis ...
+  docker run --net prod --net-alias redis ...
+  ```
+
+- 我们甚至可以在同一网络中拥有多个具有相同别名的容器
+
+  （在这种情况下，我们会获得多个 DNS 条目，也称为“DNS 循环”）
+
+网络和网络别名的创建通常是使用 Compose 等工具自动完成的。
+
+
+
+🚀 网路驱动程序
+
+- 网络由*驱动程序*管理。
+- 内置驱动程序包括：
+  - `bridge`（默认）
+  - `none`
+  - `host`
+  - `macvlan`
+  - `overlay`（对于 Swarm 集群）
+
+插件可以提供更多驱动程序
+
+overlay网络：
+
+- 到目前为止，所看到的功能仅在所有容器都位于单个主机上时才起作用。
+- 如果容器跨越多个主机，我们需要一个*覆盖*网络将它们连接在一起。
+- Docker 附带一个默认网络插件 ，`overlay`利用 VXLAN 实现覆盖网络，并*通过 Swarm 模式启用*。
+- 其他插件（Calico...）也可以提供覆盖网络。
+- 一旦有了覆盖网络，所有功能就可以在多个主机上以相同的方式工作。
+
+
+
+🚀 查看容器中的网络设置
+
+`ifconfig`我们可以使用、`ip a`或 来查看网络接口列表`ip l`：
+
+每个网络连接都通过虚拟网络接口实现。正如所看到的，可以同时连接到多个网络。
+
+
+
+### ⛳️ Compose
+
+Dockerfile = 非常适合构建*一个*容器镜像。
+
+如果有多个容器怎么办？
+
+如果其中一些需要特定`docker run`参数怎么办？
+
+... Compose 解决了这些用例
+
+Compose 支持简单、强大的入职工作流程：
+
+1. 查看我们的代码。
+2. 跑步`docker-compose up`。
+
+
+
+一般使用流程
+
+1. 编写 Dockerfile
+
+2. 在名为的 YAML 文件中描述的容器堆栈`docker-compose.yml`
+
+3. `docker-compose up`（或`docker-compose up -d`在后台运行）
+
+4. Compose 拉取并构建所需的映像，然后启动容器
+
+5. Compose 显示所有容器的组合日志
+
+   （如果在后台运行，请使用`docker-compose logs`）
+
+6. 按 Ctrl-C 停止整个堆栈
+
+   （如果在后台运行，请使用`docker-compose stop`）
+
+
+
+了解即可，实际我们可能很少会接触
+
+---
+
+## 阶段三：
+
+
+
+### ⛳️ 高效 Dockerfile 的技巧
+
+- 减少层数。
+- 利用构建缓存使构建速度更快。
+- 在构建过程中嵌入单元测试。
+
+
+
+🚀 减少层数
+
+- 每一行`Dockerfile`都会创建一个新层。
+- 构建的`Dockerfile`容器以利用 Docker 的缓存系统。
+- `&&`通过使用继续命令和`\`换行来组合命令。
+
+注意：经常会逐行构建 Dockerfile：
+
+```sh
+RUN apt-get install thisthing
+RUN apt-get install andthatthing andthatotherone
+RUN apt-get install somemorestuff
+```
+
+然后在发布之前对其进行简单的重构：
+
+```sh
+RUN apt-get install thisthing andthatthing andthatotherone somemorestuff
+```
+
+🍄 避免在每次构建时重新安装依赖项
+
+- 经典的 Dockerfile 问题：
+
+  “每次我更改一行代码，我的所有依赖项都会重新安装！”
+
+- 解决方案：单独列出`COPY`依赖项列表（`package.json`、等），以避免每次都重新安装未更改的依赖项。`requirements.txt`
+
+示例`Dockerfile` 【有问题的】
+
+```sh
+FROM python
+WORKDIR /src
+COPY . .
+RUN pip install -qr requirements.txt
+EXPOSE 5000
+CMD ["python", "app.py"]
+```
+
+每次都会重新安装依赖项，因为构建系统不知道是否`requirements.txt`已更新。
+
+作为单独的步骤添加依赖项意味着 Docker 可以更有效地缓存并且仅在`requirements.txt`更改时安装它们。
+
+```sh
+FROM python
+WORKDIR /src
+COPY requirements.txt .
+RUN pip install -qr requirements.txt
+COPY . .
+EXPOSE 5000
+CMD ["python", "app.py"]
 ```
 
 
 
+🚀小心使用 `chown` `chmod` `mv`
+
+- 层无法有效存储权限或所有权的更改。
+
+- 层也无法有效地表示文件何时被移动。
+
+- 因此，诸如`chown`、 、`chown`之类的操作`mv`。
+
+- 例如，在下面的 Dockerfile 片段中，每一`RUN`行都会创建一个包含`some-file`.
+
+  ```
+  COPY some-file .
+  RUN chown www-data:www-data some-file
+  RUN chmod 644 some-file
+  RUN mv some-file /var/www
+  ```
+
+  怎样才能避免这种情况呢？
+
+🔔 不使用`mv`，直接将文件放在正确的位置。
+
+🔔 在本地设置正确的权限
+
+- 不要使用`chmod`，而是在本地设置正确的文件权限。
+- 当使用 复制文件时`COPY`，权限将被保留。
 
 
 
+🚀 何时优化镜像
+
+在创作官方图像时，最好尽可能减少：
+
+- 层数，
+- 最终图像的大小。
+
+这通常是以牺牲构建时间和镜像维护者的便利为代价的；但是，当图像被下载数百万次时，即使节省几秒钟的拉取时间也是值得的。
 
 
+
+🚀 何时不优化镜像
+
+有时，最好优先考虑*维护人员的便利性*。
+
+特别是，如果：
+
+- 镜像变化很大，
+- 该镜像的用户很少（例如只有 1 个维护者！），
+- 镜像是在同一台机器上构建和运行的，
+- 该图像是在具有非常快的链接的机器上构建和运行的......
+
+在这些情况下，只要保持简单即可！
+
+
+
+🚀 多维版本控制系统
+
+镜像可以有一个标签，指示的版本。
+
+但有时，有多个重要组件，我们需要指明所有组件的版本。
+
+这可以通过环境变量来完成：
+
+```
+ENV PIP=9.0.3 \
+    ZC_BUILDOUT=2.11.2 \
+    SETUPTOOLS=38.7.0 \
+    PLONE_MAJOR=5.1 \
+    PLONE_VERSION=5.1.0 \
+    PLONE_MD5=76dc6cfc1c749d763c32fff3a9870d8d
+```
+
+（来源：[Plone 官方](https://github.com/plone/plone.docker/blob/master/5.1/5.1.0/alpine/Dockerfile)）
+
+
+
+🚀 entrypoint 入口脚本
+
+定义自定义entrypoint 是很常见的。
+
+该入口点通常是一个脚本，执行以下操作的任意组合：
+
+- 飞行前检查（如果所需的依赖项不可用，请尽早显示一条不错的错误消息，而不是在深层日志文件中显示晦涩难懂的错误消息），
+- 配置文件的生成或验证，
+- 放弃特权（例如使用`su`或`gosu`，有时与 结合使用`chown`），和更多。
+
+（来源：[Redis 官方图片](https://github.com/docker-library/redis/blob/d24f2be82673ccef6957210cc985e392ebdc65e4/4.0/alpine/docker-entrypoint.sh)）
+
+
+
+### ⛳️ 高级 Dockerfile 语法
+
+`Dockerfile`使用总结
+
+- `Dockerfile`指令按顺序执行。
+
+- 每条指令都会在图像中创建一个新层。
+
+- Docker 使用先前构建的各层维护一个缓存。
+
+- 当创建层的指令和文件没有更改时，构建器会重新使用缓存的层，而不执行该层的指令。
+
+- 该`FROM`指令必须是第一条非注释指令。
+
+- 以 开头的行`#`被视为注释。
+
+- 某些指令（例如`CMD`或`ENTRYPOINT`）会更新一段元数据。
+
+  （因此，每次调用这些指令都会使前一个指令变得无用。）
+
+#### 🚀指令`RUN`
+
+该`RUN`指令可以通过两种方式指定。
+
+使用 shell 包装，在 shell 内运行指定的命令，其中`/bin/sh -c`：
+
+```
+RUN apt-get update
+```
+
+或者使用该`exec`方法，它可以避免 shell 字符串扩展，并允许在没有 的图像中执行`/bin/sh`：
+
+```
+RUN [ "apt-get", "update" ]
+```
+
+🔔 `RUN`有关说明的更多信息
+
+`RUN`将执行以下操作：
+
+- 执行命令。
+- 记录对文件系统所做的更改。
+- 非常适合安装库、包和各种文件。
+
+`RUN`不会执行以下操作：
+
+- 记录*进程*的状态。
+- 自动启动守护进程。
+
+如果想在容器运行时自动启动某些内容，您应该使用`CMD`and/or `ENTRYPOINT`。
+
+可以在一个步骤中执行多个命令：
+
+```
+RUN apt-get update && apt-get install -y wget && apt-get clean
+```
+
+也可以将命令分成多行：
+
+```
+RUN apt-get update \
+ && apt-get install -y wget \
+ && apt-get clean
+```
+
+
+
+#### 🚀 指令`EXPOSE`
+
+该`EXPOSE`指令告诉 Docker 在此映像中要发布哪些端口。
+
+```
+EXPOSE 8080
+EXPOSE 80 443
+EXPOSE 53/tcp 53/udp
+```
+
+- 默认情况下，所有端口都是私有的。
+- 声明一个端口并`EXPOSE`不足以将其公开。
+- 它`Dockerfile`不控制服务在哪个端口上公开。
+
+暴露端口
+
+- 当 `docker run -p <port> ...`，该端口将变为公共。
+
+  （即使没有用 声明`EXPOSE`。）
+
+- 当`docker run -P ...`（没有端口号）时，声明的所有端口都`EXPOSE`将变为公共。
+
+*公共端口*可从其他容器和主机外部访问，从外部无法访问*专用端口*。
+
+
+
+#### 🚀 指令`COPY`
+
+该`COPY`指令将主机中的文件和内容添加到镜像中。
+
+```
+COPY . /src
+```
+
+*这会将构建上下文*的内容（作为参数传递给 的目录）添加到 容器中的`docker build`目录中。`/src`
+
+构建上下文隔离
+
+注意：您只能引用构建上下文*中的文件和目录。*绝对路径被视为锚定到构建上下文，因此以下两行是等效的：
+
+```
+COPY . /src
+COPY / /src
+```
+
+尝试`..`退出构建上下文将被 Docker 检测到并阻止，构建将会失败。
+
+否则，`Dockerfile`可能在主机 A 上成功，但在主机 B 上失败。
+
+ 
+
+#### 🚀 ADD
+
+`ADD`工作原理与 类似`COPY`，但有一些额外的功能。
+
+`ADD`可以获取远程文件：
+
+```
+ADD http://www.example.com/webapp.jar /opt/
+```
+
+这将下载`webapp.jar`文件并将其放置在`/opt` 目录中。
+
+`ADD`将自动解压 zip 文件和 tar 档案：
+
+```
+ADD ./assets.zip /var/www/htdocs/assets/
+```
+
+这将解压`assets.zip`成`/var/www/htdocs/assets`.
+
+*但是，* `ADD`不会自动解压远程档案。
+
+
+
+#### 🚀 `ADD`、`COPY`、 和构建缓存
+
+- 在创建新层之前，Docker 检查其构建缓存。
+- 对于大多数 Dockerfile 指令，Docker 仅查看 `Dockerfile`内容来进行缓存查找。
+- 对于`ADD`和`COPY`说明，Docker 还会检查要添加到容器中的文件是否已更改。
+- `ADD`总是需要下载远程文件才能检查它是否已更改。
+
+
+
+#### 🚀指令`VOLUME`
+
+该`VOLUME`指令告诉 Docker 特定的目录应该是一个*卷*。
+
+```
+VOLUME /var/lib/mysql
+```
+
+卷中的文件系统访问绕过写时复制层，为这些目录中完成的 I/O 提供本机性能。
+
+卷可以附加到多个容器，允许将数据从一个容器“移植”到另一个容器，例如将数据库升级到较新的版本。
+
+可以以“只读”模式启动容器。容器文件系统将变为只读，但如果需要，卷仍然可以具有读/写访问权限。
+
+
+
+#### 🚀 指令`WORKDIR`
+
+该`WORKDIR`指令设置后续指令的工作目录。
+
+它还会影响`CMD`和`ENTRYPOINT`，因为它设置启动容器时使用的工作目录。
+
+```
+WORKDIR /src
+```
+
+您可以`WORKDIR`再次指定更改工作目录以进行进一步的操作。
+
+
+
+#### 🚀 指令`ENV`
+
+该`ENV`指令指定应在从映像启动的任何容器中设置的环境变量。
+
+```
+ENV WEBAPP_PORT 8080
+```
+
+这将导致在从此映像创建的任何容器中创建一个环境变量
+
+```
+WEBAPP_PORT=8080
+```
+
+您还可以在使用时指定环境变量`docker run`。
+
+```
+$ docker run -e WEBAPP_PORT=8000 -e WEBAPP_HOST=www.example.com ...
+```
+
+
+
+#### 🚀 指令`USER`
+
+该`USER`指令设置运行镜像时要使用的用户名或 UID。
+
+它可以多次使用以更改回 root 或其他用户。
+
+
+
+#### 🚀 指令`CMD`_
+
+该`CMD`指令是从映像启动容器时运行的默认命令。
+
+```
+CMD [ "nginx", "-g", "daemon off;" ]
+```
+
+`nginx -g "daemon off;"`意味着我们在运行容器时不需要指定。
+
+代替：
+
+```
+$ docker run <dockerhubUsername>/web_image nginx -g "daemon off;"
+```
+
+我们可以这样做：
+
+```
+$ docker run <dockerhubUsername>/web_image
+```
+
+
+
+就像 一样`RUN`，`CMD`指令有两种形式。第一个在 shell 中执行：
+
+```
+CMD nginx -g "daemon off;"
+```
+
+第二个直接执行，没有shell处理：
+
+```
+CMD [ "nginx", "-g", "daemon off;" ]
+```
+
+
+
+🎯 覆盖`CMD`指令
+
+`CMD`当您运行容器时可以覆盖它们。
+
+```
+$ docker run -it <dockerhubUsername>/web_image bash
+```
+
+将运行`bash`而不是`nginx -g "daemon off;"`.
+
+
+
+#### 🚀 指令`ENTRYPOINT`
+
+该`ENTRYPOINT`指令与指令类似`CMD`，但命令行上给出的参数会*附加*到入口点。
+
+注意：您必须使用“exec”语法（`[ "..." ]`）。
+
+```
+ENTRYPOINT [ "/bin/ls" ]
+```
+
+如果我们要运行：
+
+```
+$ docker run training/ls -l
+```
+
+`-l`容器将运行，而不是尝试运行`/bin/ls -l`。
+
+
+
+🎯  `CMD`及`ENTRYPOINT`互动
+
+和说明`CMD`一起`ENTRYPOINT`使用时效果最佳。
+
+```
+ENTRYPOINT [ "nginx" ]
+CMD [ "-g", "daemon off;" ]
+```
+
+指定`ENTRYPOINT`要运行的命令并`CMD` 指定其选项。然后，我们可以在需要时在命令行上覆盖这些选项。
+
+```
+$ docker run -d <dockerhubUsername>/web_image -t
+```
+
+`CMD`这将覆盖新标志提供的选项。
+
+
+
+### ⛳️ 缩小镜像大小
 
