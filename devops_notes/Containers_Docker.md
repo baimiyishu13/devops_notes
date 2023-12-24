@@ -39,7 +39,7 @@ Server:
 	...
 ```
 
-当我们说运行docker 安装docker时，到底是什么意思？
+当说运行docker 安装docker时，到底是什么意思？
 
 #### 🚀 What is Docker
 
@@ -104,8 +104,8 @@ $ sh docker run -it ubuntu
 
 + 运行一个简单的`ubuntu`系统
 + -it`是 的简写`-i -t
-  + `-i`告诉 Docker 将我们连接到容器的标准输入。【input / output】
-  + `-t`告诉 Docker 我们需要一个伪终端。【terminal】
+  + `-i`告诉 Docker 将连接到容器的标准输入。【input / output】
+  + `-t`告诉 Docker 需要一个伪终端。【terminal】
 
 镜像大小：
 
@@ -115,7 +115,7 @@ REPOSITORY   TAG       IMAGE ID       CREATED       SIZE
 ubuntu       latest    da935f064913   10 days ago   69.3MB
 ```
 
-尝试在我们的容器中运行`figlet`
+尝试在的容器中运行`figlet`
 
 ```sh
 apt-get update
@@ -140,10 +140,10 @@ root@792c40d4a504:/# figlet Hello
 🔔 主机和容器是独立的东西，在主机上安装某些东西不会将其暴露给容器，反之亦然。
 
 + 可以重复 花时间定制的容器，这不是 Docker 的默认工作流程
-+ 如果我们需要在容器中安装某些东西，请构建自定义映像
++ 如果需要在容器中安装某些东西，请构建自定义映像
 + 看起来很复杂其实非常简单【非常强调自动化和可重复性】
 
-🎯 如果我们启动一个新容器并尝试`figlet`？
+🎯 如果启动一个新容器并尝试`figlet`？
 
 ```sh
 $ docker run -it ubuntu
@@ -160,13 +160,13 @@ bash: figlet: command not found
 
 🎯 本地开发环境
 
-当我们使用本地虚拟机（例如 VirtualBox 或 VMware）时，我们的工作流程如下所示：
+当使用本地虚拟机（例如 VirtualBox 或 VMware）时，的工作流程如下所示：
 
 - 从基本模板创建虚拟机（Ubuntu、CentOS...）
 - 安装包，设置环境
 - 从事项目工作
 - 完成后，关闭虚拟机
-- 下次我们需要处理项目时，按照离开时的方式重新启动虚拟机
+- 下次需要处理项目时，按照离开时的方式重新启动虚拟机
 
 随着时间的推移，虚拟机配置会不断发展、出现差异，没有一种干净、可靠、确定的方式来提供该环境。
 
@@ -176,22 +176,22 @@ bash: figlet: command not found
 
 使用 Docker，工作流程如下所示：
 
-- 使用我们的开发环境创建容器镜像
+- 使用的开发环境创建容器镜像
 - 使用该镜像运行容器
 - 从事项目工作
 - 完成后，关闭容器
-- 下次我们需要处理项目时，启动一个新容器
-- 如果我们需要调整环境，我们创建一个新图像
+- 下次需要处理项目时，启动一个新容器
+- 如果需要调整环境，创建一个新镜像
 
-我们对我们的环境有清晰的定义，并且可以可靠地与他人共享。
+对的环境有清晰的定义，并且可以可靠地与他人共享。
 
 
 
 ### ⛳️ 容器背景
 
-我们的第一个容器是*交互式的*。
+的第一个容器是*交互式的*。
 
-我们现在将了解如何：
+现在将了解如何：
 
 - 运行非交互式容器。
 - 在后台运行容器。
@@ -202,7 +202,7 @@ bash: figlet: command not found
 
 #### 🚀 非交互式容器
 
-我们将运行一个小型自定义容器。【该容器仅显示每秒的时间】
+将运行一个小型自定义容器。【该容器仅显示每秒的时间】
 
 ```dockerfile
 FROM alpine:latest
@@ -241,7 +241,7 @@ $ docker run -d clock
 4e795afdea6d5d83930bbc3d0109b6dbbf589195069ed30020963a8d55742da8
 ```
 
-- 我们看不到容器的输出,但Docker 为我们提供了容器的 ID。
+- 看不到容器的输出,但Docker 为提供了容器的 ID。
 
 
 
@@ -289,9 +289,9 @@ $ docker logs 4e7
 ```
 
 - 指定了容器 ID 的*前缀、当然，您可以指定完整的 ID。
-- 该`logs`命令将输出容器的 *完整日志。*（有时，这会太多。让我们看看如何解决这个问题。）
+- 该`logs`命令将输出容器的 *完整日志。*（有时，这会太多。让看看如何解决这个问题。）
 
-为了避免被十一个页面的输出垃圾邮件，我们可以使用以下
+为了避免被十一个页面的输出垃圾邮件，可以使用以下
 
 + `--tail`选项
 + `-f`，可以跟踪容器的日志（这将显示日志文件中的最后一行。然后，它将继续实时显示日志）
@@ -339,7 +339,7 @@ $ docker kill 4e
 
 image = 文件+元数据
 
-- 这些文件构成了我们容器的根文件系统。
+- 这些文件构成了容器的根文件系统。
 - 元数据可以指示很多事情，例如 【作者信息、启动命令、环境变量等等】
 
 镜像由层*组成，从概念上讲，镜像彼此堆叠
@@ -356,7 +356,7 @@ Java Web 应用程序示例
 以下每一项都对应一层：
 
 - CentOS基础OS层
-- 由我们本地 IT 添加的包和配置文件
+- 由本地 IT 添加的包和配置文件
 - JRE
 - Tomcat
 - 应用程序的依赖项
@@ -365,7 +365,7 @@ Java Web 应用程序示例
 
 （注意：应用程序配置通常由编排工具添加。）
 
-在堆叠层中，我们只能在最上层写入，其他层都是可读的
+在堆叠层中，只能在最上层写入，其他层都是可读的
 
 + 顶层：读写层
 + 下面的层都是只读
@@ -381,12 +381,12 @@ Java Web 应用程序示例
 
  <img src="./images/Containers_Docker/image-20231223154452054.png" alt="image-20231223154452054" width="50%" />
 
-🤔 如果镜像是只读的，我们如何更改它？
+🤔 如果镜像是只读的，如何更改它？
 
-- 我们不去改变镜像层。
-- 我们从该镜像创建一个新容器。
-- 然后我们对该容器进行更改。
-- 当我们对这些更改感到满意时，我们将它们转换为新层。
+- 不去改变镜像层。
+- 从该镜像创建一个新容器。
+- 然后对该容器进行更改。
+- 当对这些更改感到满意时，将它们转换为新层。
 - 通过将新图层堆叠在旧镜像之上来创建新镜像。
 
 👀 先有鸡还是先有蛋的问题
@@ -423,18 +423,18 @@ FROM ubuntu
 RUN apt-get update & apt-get install -y figlet
 ```
 
-- `FROM`表示我们构建的基础镜像。
+- `FROM`表示构建的基础镜像。
 - 每`RUN`行都将在构建过程中由 Docker 执行。
-- 我们的`RUN`命令**必须是非交互式的。**（构建期间无法向 Docker 提供任何输入。）
-- 在许多情况下，我们会将`-y`标志添加到`apt-get`.
+- 的`RUN`命令**必须是非交互式的。**（构建期间无法向 Docker 提供任何输入。）
+- 在许多情况下，会将`-y`标志添加到`apt-get`.
 
-保存我们的文件，然后执行：
+保存的文件，然后执行：
 
 ```
 $ docker build -t figlet .
 ```
 
-- `-t`表示要应用于图像的标签。
+- `-t`表示要应用于镜像的标签。
 - `.`*指示构建上下文*的位置。
 
 
@@ -469,11 +469,11 @@ Shell 语法指定要包装在`/bin/sh -c "..."`.
 
 #### 🚀 CMD`和`ENTRYPOINT
 
-允许我们设置在容器中运行的默认命令
+允许设置在容器中运行的默认命令
 
 🎯 使用cmd
 
-我们的新 Dockerfile 将如下所示：
+的新 Dockerfile 将如下所示：
 
 ```
 FROM ubuntu
@@ -499,21 +499,21 @@ $ docker run hello
 |   |_/|__/|__/|__/\__/
 ```
 
-如果我们想要将 shell 放入容器中,只需指定要运行的不同程序：
+如果想要将 shell 放入容器中,只需指定要运行的不同程序：
 
 ```sh
 ➜  devops_notes git:(main) ✗ docker run -ti hello sh
 #
 ```
 
-- 我们指定了`sh`.
+- 指定了`sh`.
 - 它取代了 的值`CMD`。
 
 
 
 🎯 使用`ENTRYPOINT`
 
-我们的新 Dockerfile 将如下所示：
+的新 Dockerfile 将如下所示：
 
 ```dockerfile
 FROM ubuntu
@@ -526,12 +526,12 @@ ENTRYPOINT ["figlet", "-f", "script"]
 - 命令行参数将附加到这些参数中。
 - 就像`CMD`,`ENTRYPOINT`可以出现在任何地方，并替换以前的值。
 
-🤔 为什么我们使用 JSON 语法`ENTRYPOINT`？
+🤔 为什么使用 JSON 语法`ENTRYPOINT`？
 
 - 当 CMD 或 ENTRYPOINT 使用字符串语法时，它们会被包装在`sh -c`.
-- 为了避免这种包装，我们可以使用 JSON 语法。
+- 为了避免这种包装，可以使用 JSON 语法。
 
-如果我们使用`ENTRYPOINT`字符串语法怎么办：这将在图像中运行以下命令`figlet`：
+如果使用`ENTRYPOINT`字符串语法怎么办：这将在镜像中运行以下命令`figlet`：
 
 ```sh
 sh -c "figlet -f script" Hello
@@ -552,13 +552,13 @@ sh -c "figlet -f script" Hello
 
 🎯 `CMD`和`ENTRYPOINT`一起使用
 
-如果我们想为容器定义默认参数怎么办？将一起使用`ENTRYPOINT`和`CMD`。
+如果想为容器定义默认参数怎么办？将一起使用`ENTRYPOINT`和`CMD`。
 
-- `ENTRYPOINT`将为我们的容器定义基本命令。
+- `ENTRYPOINT`将为的容器定义基本命令。
 - `CMD`将定义该命令的默认参数。
 - 它们*都*必须使用 JSON 语法。
 
-我们的新 Dockerfile 将如下所示：
+的新 Dockerfile 将如下所示：
 
 ```dockerfile
 FROM ubuntu
@@ -569,8 +569,8 @@ CMD ["hello world"]
 ```
 
 - `ENTRYPOINT`为容器定义基本命令（及其参数）。
-- 如果我们在启动容器时没有指定额外的命令行参数，`CMD`则会附加 的值。
-- 否则，将使用我们额外的命令行参数而不是`CMD`.
+- 如果在启动容器时没有指定额外的命令行参数，`CMD`则会附加 的值。
+- 否则，将使用额外的命令行参数而不是`CMD`.
 
 
 
@@ -588,9 +588,9 @@ CMD ["hello world"]
 
 例子：`docker run consul --help`（假装该`docker run`部分不存在！）
 
-`CMD`非常适合具有多个二进制文件的图像。
+`CMD`非常适合具有多个二进制文件的镜像。
 
-例子：`docker run busybox ifconfig`（表明我们要运行*哪个程序是有意义的！*）
+例子：`docker run busybox ifconfig`（表明要运行*哪个程序是有意义的！*）
 
 
 
@@ -598,7 +598,7 @@ CMD ["hello world"]
 
 Dockerfile 关键字：`COPY`.
 
-- 我们可以`COPY`递归地遍历整个目录
+- 可以`COPY`递归地遍历整个目录
 
 - 可以这样做，例如`COPY . .`
 
@@ -608,7 +608,7 @@ Dockerfile 关键字：`COPY`.
 
   （类似`COPY`但可以自动提取档案）
 
-我们可以创建一个名为`.dockerignore`
+可以创建一个名为`.dockerignore`
 
 （在构建上下文的顶层）
 
@@ -616,7 +616,7 @@ Dockerfile 关键字：`COPY`.
 
 - 它们不会被发送给建筑商
 
-  （并且不会最终出现在结果图像中）
+  （并且不会最终出现在结果镜像中）
 
 有关小细节请参阅[文档](https://docs.docker.com/engine/reference/builder/#dockerignore-file)
 
@@ -742,29 +742,170 @@ CONTAINER ID   IMAGE     COMMAND   CREATED         STATUS         PORTS         
 
 
 
+运行一个静态 Web 服务器，监听端口 80 【使用官方 NGINX 镜像】
+
++ 提供默认的“欢迎来到 nginx！” 页
+
+🔔 在 Docker 中，`-p` 和 `-P` 是用于端口映射的两个不同的选项
+
++ `-P` ： 随机端口 【然而，用于快速测试是相当常见的】
++ `-p`： 手动指定主机和容器之间的端口映射关系 【当镜像无法`EXPOSE`正确移植时】
+
+```sh
+$ docker run -d -P nginx
+```
+
+需要找到Docker使用的*端口号*（NGINX容器监听80端口，但是这个端口会被*映射*）
+
+```sh
+✗ docker ps
+CONTAINER ID   IMAGE     COMMAND                   CREATED          STATUS          PORTS                    NAMES
+0dfbf51ecfde   nginx     "/docker-entrypoint.…"   37 seconds ago   Up 36 seconds   0.0.0.0:55000->80/tcp    sleepy_feistel
+```
+
+另一个命令：
+
+```sh
+$ docker port 83abfb85cdae 80
+0.0.0.0:5500
+```
 
 
 
+ <img src="./images/Containers_Docker/image-20231224142753209.png" alt="image-20231224142753209" width="50%;" />
+
++ *Docker主机上的端口55000映射到容器中的端口80*
+
+还可以`curl`直接从 Docker 主机使用
+
+```sh
+$ curl localhost:55000
+```
 
 
 
+🎯 Docker 如何知道要映射哪个端口
+
++ 镜像 中的元数据告诉“该镜像在端口 80 上有一些东西”。
++ 可以通过以下方式查看元数据`docker inspect`：
+
+```sh
+$ docker inspect 0df
+...
+	           "ExposedPorts": {
+                "80/tcp": {}
+            }
+	"IPAddress": "172.17.0.3",
+...
+```
+
+该元数据是在 Dockerfile 中使用`EXPOSE`关键字设置的。
+
+```sh
+$ docker history nginx
+IMAGE          CREATED        CREATED BY                                       SIZE      COMMENT
+8aea65d81da2   2 months ago   CMD ["nginx" "-g" "daemon off;"]                 0B        buildkit.dockerfile.v0
+<missing>      2 months ago   STOPSIGNAL SIGQUIT                               0B        buildkit.dockerfile.v0
+<missing>      2 months ago   EXPOSE map[80/tcp:{}]                            0B        buildkit.dockerfile.v0
+<missing>      2 months ago   ENTRYPOINT ["/docker-entrypoint.sh"]             0B        buildkit.dockerfile.v0
+...
+```
 
 
 
+🤔 将容器集成到网络中的方法有很多。
+
+1. 启动容器，让 Docker 为其分配公共端口。然后检索该端口号并将其提供给您的配置。
+2. 生成配置时，请提前选择固定端口号。然后通过手动设置端口号来启动容器
+3. 使用 Kubernetes 或 Swarm 等编排器。协调器将提供自己的网络设施。
 
 
 
+可以使用`docker inspect`命令来查找容器的IP地址。
+
+```sh
+$ docker inspect --format '{{ .NetworkSettings.IPAddress }}' 83abfb85cdae
+172.17.0.4
+```
+
+`docker inspect`是一个高级命令，可以检索有关容器的大量信息。
+
++ 可能会用于脚本中
+
+*尝试从另一个容器*ping 的容器
+
+```sh
+$ docker run alpine ping 172.17.0.4
+```
 
 
 
+### ⛳️ 使用 Docker 进行本地开发工作流程
+
+- 在容器和主机之间共享代码。
+- 使用简单的本地开发工作流程。
+
+主要是 `-v` : 标志将主机中的目录安装到 Docker 容器中
+
+标志结构为：
+
+```
+[host-path]:[container-path]:[rw|ro]
+```
+
+- `[host-path]``[container-path]`如果它们不存在则创建。
+- `ro`您可以使用和 选项控制卷的写入状态`rw`。
+- 如果不指定`rw`或`ro`，则`rw`默认为。
+
+⚠️注意：语法`-v /path/on/host:/path/in/container`是“旧”语法
+
+- 现代语法如下所示：
+
+  `--mount type=bind,source=/path/on/host,target=/path/in/container`
+
+- `--mount`更明确，但`-v`输入速度更快
+
+- `--mount`支持所有安装类型；`-v`不支持`tmpfs`安装
+
+- `--mount`如果主机上的路径不存在则失败；`-v`创造它
+
+使用新语法，命令变为：
+
+```sh
+$ docker run --mount=type=bind,source=$(pwd),target=/src -dP name
+```
 
 
 
+ 🤔开发工作流程回顾
+
+1. 编写一个 Dockerfile 来构建包含的开发环境的镜像。（以及应用程序的所有依赖项）
+2. 从该映像启动一个容器。使用该`-v`标志将的源代码安装到容器内。
+3. 测试应用程序。
+4. 迭代并重复步骤3，直到满意为止。
+5. 完成后，提交+推送源代码更改。
+
+容器内部调试：`docker exec`
 
 
 
+### ⛳️ 容器管理模型
 
+了解CNM（容器网络模型）
 
+- 为一组容器创建专用网络。
+- 使用容器命名将服务连接在一起。
+- 动态地将容器连接到网络和断开容器与网络的连接。
+- 设置容器的IP地址。
+
+还将解释覆盖网络和网络插件的原理。
+
+Docker 有“网络”。
+
+可以通过`docker network`命令来管理它们；例如：
+
+```sh
+```
 
 
 
