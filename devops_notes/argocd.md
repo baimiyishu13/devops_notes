@@ -97,4 +97,67 @@ ArgoCD 作为Kubernetes 扩展
 
 
 
- [0:45](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=45s) - 什么是 ArgoCD [1:29](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=89s) - 不使用 ArgoCD 的 CD 工作流程 [4:48](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=288s) -  [9:34](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=574s) - 将 GitOps 与 ArgoCD 结合使用的好处    [9:41](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=581s) - Git 作为单一事实来源    [13:20](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=800s) - 轻松回滚    [14:08](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=848s) - 集群灾难恢复 [15:10](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=910s) - 使用 Git 和 ArgoCD 进行 K8s 访问控制 [16:52](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=1012s) - ArgoCD 作为Kubernetes 扩展 [18:49](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=1129s) - 如何配置 ArgoCD？ [20:08](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=1208s) - 使用 ArgoCD 实现多个集群 [23:24](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=1404s) - 替代其他 CI/CD 工具？ [24:45](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=1485s) - 演示设置和概述 [27:42](https://www.youtube.com/watch?v=MeU5_k9ssrs&t=1662s) - 动手演示开始
+🤔：替代其他 CI/CD 工具？
+
++ 仍然需要 jenkins的 ci 管道来实际测试和构建应用程序代码更改
++ argo cd 是 CD管道的替代品 【专门针对 k8s 集群】
+
+argo cd 不是唯一的，以及由很多的替代品
+
++ flux、jenkinsx等等，可能会创建更多的替代品
+
+
+
+#### 🧪 实验 【MAC】-minikube
+
+1. 安装 argocd ---> k8s
+2. 配置 Argocd
+3. 测试更新 部署 yaml
+
+ ![image-20231231021427266](./images/argocd/image-20231231021427266.png)
+
+下一步：配置
+
++ 使argocd 连接到托管的配置文件中的 git存储库
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myapp
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://gitlab.com/baimiyishu13/argocd-ceshi.git
+    targetRevision: HEAD
+    path: dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: myapp
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+    # 同步集群中的手动更改
+      selfHeal: true
+    # 默认 false，删除 yaml 自动同步删除资源
+      prune: true
+```
+
+测试代码
+
+```sh
+➜  argocd-ceshi git:(main) ✗ tree
+.
+├── README.md
+├── application.yaml
+└── dev
+    ├── app-deployment.yaml
+    └── app-service.yaml
+ 
+➜  argocd-ceshi git:(main) kubectl apply -f application.yaml
+```
+
+ ![image-20231231031107629](./images/argocd/image-20231231031107629.png)
+
