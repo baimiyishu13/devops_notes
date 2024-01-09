@@ -14,12 +14,13 @@
 8. 🛟 [Argo - CD](./devops_notes/argocd.md)
 9. [☁️ AWS - 云](#aws)
 10. [⚙️ K8s - 容器编排](#k8s)
-11. [🚀 云上 K8s - 无尽可能性](#cloud-k8s)
-12. [🌍 ICA-Terraform - 基础设施之梦](#terraform)
-13. [🐍 Python - 编写脚本](#python)
-14. [🚀 Go - 编程的无尽星辰](#go)
-15. [🔐 Ansible - 自动化之剑](#ansible)
-16. [📊 Prometheus & Grafana - 监控世界的守护者](#prometheus-grafana)
+11. HELM
+12. [🚀 云上 K8s - 无尽可能性](#cloud-k8s)
+13. [🌍 ICA-Terraform - 基础设施之梦](#terraform)
+14. [🐍 Python - 编写脚本](#python)
+15. [🚀 Go - 编程的无尽星辰](#go)
+16. [🔐 Ansible - 自动化之剑](#ansible)
+17. [📊 Prometheus & Grafana - 监控世界的守护者](#prometheus-grafana)
 
 ## 🌈 关于
 
