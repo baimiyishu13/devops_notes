@@ -1,3 +1,0 @@
-ls
-ip a
-exit

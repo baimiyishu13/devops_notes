@@ -1,2 +1,0 @@
-cat /etc/motd 
-exit

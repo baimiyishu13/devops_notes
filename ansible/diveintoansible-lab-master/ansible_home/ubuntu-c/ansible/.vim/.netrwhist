@@ -1,8 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =6
-let g:netrw_dirhist_6='/home/ansible/diveintoansible/Ansible Playbooks, Introduction/Ansible Playbooks, Creating and Executing/solution/06/host_vars'
-let g:netrw_dirhist_5='/home/ansible/diveintoansible/Ansible Playbooks, Introduction/Ansible Playbooks, Creating and Executing/solution/05/host_vars'
-let g:netrw_dirhist_4='/home/ansible/diveintoansible/Ansible Playbooks, Introduction'
-let g:netrw_dirhist_3='/home/ansible/diveintoansible/Ansible Playbooks, Introduction/Ansible Playbooks, Facts'
-let g:netrw_dirhist_2='/home/ansible/diveintoansible/Ansible Playbooks, Introduction/Ansible Playbooks, Facts/03'
-let g:netrw_dirhist_1='/home/ansible/diveintoansible/Ansible Playbooks, Introduction/Ansible Playbooks, Facts/03/host_vars'
